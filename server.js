@@ -1,10 +1,11 @@
 var express = require('express');
-var app = express()
-var server = require('http').Server(app)
-var pm = require('./powermate')
-var io = require('socket.io')(server)
+var app = express();
+var server = require('http').Server(app);
+var pm = require('./powermate');
+var io = require('socket.io')(server);
 var fs = require('fs');
-var cors = require('cors')
+var cors = require('cors');
+var _ = require('underscore');
 var powermate;
 
 app.use(express.static('public'));
@@ -18,14 +19,12 @@ app.get('/brightness/:bright', function (req, res) {
 });
 
 app.get('/pa/:pa', function (req, res) {
-  console.log(req.params)
   powermate.setPulseAwake(req.params.pa == 1 ? 1 : 0)
   res.send('Pulse Awake');
 
 });
 
 app.get('/pas/:pas', function (req, res) {
-    console.log(req.params)
   powermate.setPulseAsleep(req.params.pas == 1 ? 1 : 0)
   res.send('Pulse Asleep!');
 });
@@ -33,6 +32,39 @@ app.get('/pas/:pas', function (req, res) {
 app.get('/videos/', function(req,res){
     res.json(fs.readdirSync('./public/videos'));
 });
+
+app.get('/media/', function(req,res){
+    files = fs.readdirSync('./public/media');
+    file_dict = {};
+
+    for(var i = 0; i < files.length; i++){
+      if(files[i].indexOf('_video.mp4') !== -1 || files[i].indexOf('_audio.mp3') !== -1){
+        basename = files[i].replace('_video.mp4', '').replace('_audio.mp3','');
+        if(file_dict[basename] === undefined){
+          file_dict[basename] = {
+            audio: null,
+            video: null
+          };
+        }
+        if (files[i].indexOf('_audio.mp3') !== -1){
+            file_dict[basename]['audio'] = files[i];
+        }
+        if (files[i].indexOf('_video.mp4') !== -1){
+            file_dict[basename]['video'] = files[i];
+        }
+      }
+    }
+    
+    // Now we have all the files, let's make sure they all have both video and audio and then send 'em
+    return_vals = []
+    _.each(file_dict, function(v,i){
+        if (v['audio'] !== null && v['video'] !== null) {
+            return_vals.push([v['video'], v['audio']]);
+        }
+    });
+    
+    res.json(return_vals)
+})
 
 server.listen(3000, function () {
   console.log('Example app listening on port 3000!');

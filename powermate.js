@@ -98,7 +98,14 @@ PowerMate.prototype.interpretData = function(error, data) {
     var button = data[0];
     if (button ^ this.button) {
         console.log('going to emit!')
-        this.socket.emit('button', {'button': button ? 1 : 0});
+        if (button === 1) {
+            console.log('buttonDown')
+            this.socket.emit('buttonDown', {});
+        }
+        else{
+            this.socket.emit('buttonUp', {});
+        }
+        
         this.button = button;
     }
     var delta = data[1];

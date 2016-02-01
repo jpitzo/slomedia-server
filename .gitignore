@@ -27,5 +27,9 @@ build/Release
 node_modules
 
 public/videos/*.mp4
+public/media/*.mp4
+public/media/*.mp3
 
 *.komodoproject
+
+.idea
