@@ -19,6 +19,8 @@ var SET_PULSE_AWAKE = 0x03;
 var SET_PULSE_MODE = 0x04;
 
 var allDevices;
+var powermateObjects = {};
+
 function getAllDevices()
 {
     if (!allDevices) {
@@ -42,7 +44,12 @@ function PowerMate(socket, index)
     if (index > powerMates.length || index < 0) {
         throw new Error("Index " + index + " out of range, only " + powerMates.length + " PowerMates found");
     }
-    this.hid = new HID.HID(powerMates[index].path);
+    
+    // This can't be called twice or the second call will wonk out
+    if (powermateObjects[index] === undefined) {
+        powermateObjects[index] = new HID.HID(powerMates[index].path);
+    }
+    this.hid = powermateObjects[index];
     this.position = 0;
     this.button = 0;
     this.hid.read(this.interpretData.bind(this));
