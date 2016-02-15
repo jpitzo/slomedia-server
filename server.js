@@ -8,7 +8,7 @@ var cors = require('cors');
 var _ = require('underscore');
 var powermate;
 
-app.use(express.static('public'));
+app.use(express.static('/data/media'));
 app.use(cors());
 
 app.get('/brightness/:bright', function (req, res) {
