@@ -30,11 +30,11 @@ app.get('/pas/:pas', function (req, res) {
 });
 
 app.get('/videos/', function(req,res){
-    res.json(fs.readdirSync('./public/videos'));
+    res.json(fs.readdirSync('/data/server/public/videos'));
 });
 
 app.get('/media/', function(req,res){
-    files = fs.readdirSync('./public/media');
+    files = fs.readdirSync('/data/server/public/media');
     file_dict = {};
 
     for(var i = 0; i < files.length; i++){
