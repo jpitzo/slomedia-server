@@ -11,10 +11,12 @@ process.on('message', function(msg){
     var action = msg.action;
     
     if (action === 'start_pulse') {
-        start_pulse()
+        console.log('starting pulse');
+        start_pulse();
     }
     else if (action === 'stop_pulse') {
-        stop_pulse()
+        console.log('stopping pulse');
+        stop_pulse();
     }
     else if (action === 'pa') {
         powermate.setPulseAwake(msg.data.value);

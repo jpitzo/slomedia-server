@@ -45,8 +45,6 @@ function PowerMate(process)
     this.button = 0;
     this.hid.read(this.interpretData.bind(this));
     this.process = process;
-    console.log('powermate setup!');
-    console.log(this.process);
 }
 
 util.inherits(PowerMate, events.EventEmitter);
@@ -98,9 +96,7 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
 PowerMate.prototype.interpretData = function(error, data) {
     var button = data[0];
     if (button ^ this.button) {
-        console.log('going to emit!')
         if (button === 1) {
-            console.log('buttonDown')
             this.process.send({ action: 'buttonDown', data: {}});
         }
         else{
@@ -117,8 +113,6 @@ PowerMate.prototype.interpretData = function(error, data) {
         this.position += delta;
         this.process.send({ action: 'turn', data: {delta: delta, position: this.position }});
     }
-
-    console.log(this.button + "-" + this.position + "-" + delta)
     this.hid.read(this.interpretData.bind(this));
 }
 

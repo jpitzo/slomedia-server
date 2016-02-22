@@ -90,9 +90,6 @@ io.on('connection', function(socket){
 // Manage pmProc -> socket connection
 pmProc.on('message', function(msg){
   // Pass along messages to sockets
-  console.log('getting pmProc message');
-  console.log(msg);
-  console.log(sockets);
   Object.keys(sockets).forEach(function(key) {
     if (sockets[key].connected) {
         sockets[key].emit(msg.action, msg.data);
