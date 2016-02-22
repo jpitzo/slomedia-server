@@ -31,14 +31,8 @@ function getAllDevices()
     return allDevices;
 }
 
-function PowerMate(socket)
+function PowerMate()
 {
-    
-    if (socket) {
-        sockets[socket.id] = socket;
-        this.socket = socket.id;
-    }
-
     var powerMates = getAllDevices();
     if (!powerMates.length) {
         throw new Error("No PowerMates could be found");
@@ -71,6 +65,12 @@ PowerMate.prototype._sendCommand = function(/* command [, args ...]*/) {
         console.log(error);
     }
 };
+
+PowerMate.prototype.addSocket = function(socket){
+    sockets[socket.id] = socket;
+    
+    return socket.id;
+}
 
 PowerMate.prototype.setLed = function(brightness) {
     this.hid.write([1, brightness]);

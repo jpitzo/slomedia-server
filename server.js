@@ -11,14 +11,16 @@ var powermate = null;
 app.use(express.static('/data/media'));
 app.use(cors());
 
+// Setup powermate
+powermate = new pm.PowerMate();
+
 app.get('/brightness/:bright', function (req, res) {
   powermate.setBrightness(1*req.params.bright)
   res.send('Hello World!');
 });
 
 app.get('/pulse/', function (req, res) {
-  init_powermate(null);
-  
+
   var bright = 100;
   var direction = 'down';
   powermate.setBrightness(bright);
@@ -97,8 +99,7 @@ server.listen(3000, function () {
 
 io.on('connection', function(socket){
     // Setup powermate
-    
-    init_powermate(socket);
+    powermate.addSocket(socket);
 
     socket.on('sync', function(data){
         console.log('here!!');
@@ -109,7 +110,3 @@ io.on('connection', function(socket){
         },3000);
     })
 });
-
-function init_powermate(socket) {
-    powermate = new pm.PowerMate(socket);
-}
