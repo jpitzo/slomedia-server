@@ -25,10 +25,10 @@ app.get('/brightness/:bright', function (req, res) {
 app.get('/pulse/:ss', function (req, res) {
   
   if(req.params.ss === 'start'){
-    pulseProc.send('pulse');
+    pulseProc.send({action: 'start', powermate: powermate});
   }
   else{
-    pulseProc.send('stop');
+    pulseProc.send({action: 'stop', powermate: powermate});
   }
   
   res.send('Pulse set to ' + req.params.ss);

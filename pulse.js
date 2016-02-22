@@ -2,15 +2,15 @@ var pulsing = false;
 var interval = null;
 
 process.on('message', function(msg){
-    if (msg === 'pulse' && pulsing === false) {
-        pulse();
+    if (msg.action === 'start' && pulsing === false) {
+        pulse(msg.powermate);
     }
-    else if (msg === 'stop' && pulsing === true) {
-        stop();
+    else if (msg.action === 'stop' && pulsing === true) {
+        stop(msg.powermate);
     }
 });
 
-function pulse(){
+function pulse(powermate){
     if (interval) {
         clearInterval(interval);
     }
@@ -37,7 +37,7 @@ function pulse(){
     },20);
 }
 
-function stop() {
+function stop(powermate) {
     if (interval) {
         clearInterval(interval);
     }
