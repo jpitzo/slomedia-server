@@ -19,7 +19,9 @@ var SET_PULSE_AWAKE = 0x03;
 var SET_PULSE_MODE = 0x04;
 
 var allDevices;
-var powermateObjects = {};
+var powermateObject = null;
+
+var sockets = {};
 
 function getAllDevices()
 {
@@ -29,27 +31,24 @@ function getAllDevices()
     return allDevices;
 }
 
-function PowerMate(socket, index)
+function PowerMate(socket)
 {
-    if(!index){
-        index = 0
+    
+    if (socket) {
+        sockets[socket.id] = socket;
+        this.socket = socket.id;
     }
-
-    this.socket = socket
 
     var powerMates = getAllDevices();
     if (!powerMates.length) {
         throw new Error("No PowerMates could be found");
     }
-    if (index > powerMates.length || index < 0) {
-        throw new Error("Index " + index + " out of range, only " + powerMates.length + " PowerMates found");
-    }
     
     // This can't be called twice or the second call will wonk out
-    if (powermateObjects[index] === undefined) {
-        powermateObjects[index] = new HID.HID(powerMates[index].path);
+    if (powermateObject === null) {
+        powermateObject = new HID.HID(powerMates[index].path);
     }
-    this.hid = powermateObjects[index];
+    this.hid = powermateObject;
     this.position = 0;
     this.button = 0;
     this.hid.read(this.interpretData.bind(this));
@@ -107,10 +106,10 @@ PowerMate.prototype.interpretData = function(error, data) {
         console.log('going to emit!')
         if (button === 1) {
             console.log('buttonDown')
-            this.socket.emit('buttonDown', {});
+            this.socketEmit('buttonDown', {});
         }
         else{
-            this.socket.emit('buttonUp', {});
+            this.socketEmit('buttonUp', {});
         }
         
         this.button = button;
@@ -121,11 +120,23 @@ PowerMate.prototype.interpretData = function(error, data) {
             delta = -256 + delta;
         }
         this.position += delta;
-        this.socket.emit('turn', {delta: delta, position: this.position });
+        this.socketEmit('turn', {delta: delta, position: this.position });
     }
 
     console.log(this.button + "-" + this.position + "-" + delta)
     this.hid.read(this.interpretData.bind(this));
+}
+
+PowerMate.prototype.socketEmit = function(event, data){
+    Object.keys(sockets).forEach(function(key) {
+        if (sockets[key].connected) {
+            sockets[key].emit(event, data);
+        }
+        else{
+            // Remove socket
+            delete sockets[key];
+        }
+    });
 }
 
 exports.PowerMate = PowerMate;

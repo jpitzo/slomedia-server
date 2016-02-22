@@ -6,16 +6,41 @@ var io = require('socket.io')(server);
 var fs = require('fs');
 var cors = require('cors');
 var _ = require('underscore');
-var powermate;
+var powermate = null;
 
 app.use(express.static('/data/media'));
 app.use(cors());
 
 app.get('/brightness/:bright', function (req, res) {
-  console.log(1*req.params.bright)
-
   powermate.setBrightness(1*req.params.bright)
   res.send('Hello World!');
+});
+
+app.get('/pulse/', function (req, res) {
+  init_powermate(null);
+  
+  var bright = 100;
+  var direction = 'down';
+  powermate.setBrightness(bright);
+  
+  setInterval(function(){
+    if (direction === 'down') {
+        bright += -10;
+    }
+    else{
+      bright += 10;
+    }
+    
+    if (bright === 100) {
+        direction = 'down';
+    }
+    else if (bright === 0) {
+        direction = 'up';
+    }
+    powermate.setBrightness(bright);
+  },50);
+
+  // Don't send response, as this will be long running
 });
 
 app.get('/pa/:pa', function (req, res) {
@@ -73,7 +98,7 @@ server.listen(3000, function () {
 io.on('connection', function(socket){
     // Setup powermate
     
-    powermate = new pm.PowerMate(socket)
+    init_powermate(socket);
 
     socket.on('sync', function(data){
         console.log('here!!');
@@ -83,4 +108,10 @@ io.on('connection', function(socket){
             powermate.setBrightness(255);
         },3000);
     })
-})
+});
+
+function init_powermate(socket) {
+    if (powermate === null) {
+        powermate = new pm.PowerMate(socket);
+    }
+}
