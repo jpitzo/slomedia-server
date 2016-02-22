@@ -2,6 +2,7 @@ var pulsing = false;
 var interval = null;
 
 process.on('message', function(msg){
+    console.log(msg);
     if (msg.action === 'start' && pulsing === false) {
         pulse(msg.powermate);
     }
@@ -14,6 +15,8 @@ function pulse(powermate){
     if (interval) {
         clearInterval(interval);
     }
+    
+    console.log(powermate);
     
     var bright = 100;
     var direction = 'down';
