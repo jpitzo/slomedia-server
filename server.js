@@ -25,10 +25,10 @@ app.get('/pulse/', function (req, res) {
   
   setInterval(function(){
     if (direction === 'down') {
-        bright += -3;
+        bright += -2;
     }
     else{
-      bright += 3;
+      bright += 2;
     }
     
     if (bright === 100) {
@@ -38,7 +38,7 @@ app.get('/pulse/', function (req, res) {
         direction = 'up';
     }
     powermate.setBrightness(bright);
-  },30);
+  },20);
 
   // Don't send response, as this will be long running
 });
