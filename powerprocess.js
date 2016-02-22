@@ -7,15 +7,16 @@ var pulse_interval = null;
 // Setup powermate
 powermate = new pm.PowerMate(process);
 
+// Let's make sure the brightness is always at 100 to start
+powermate.setBrightness(100);
+
 process.on('message', function(msg){
     var action = msg.action;
     
     if (action === 'start_pulse') {
-        console.log('starting pulse');
         start_pulse();
     }
     else if (action === 'stop_pulse') {
-        console.log('stopping pulse');
         stop_pulse();
     }
     else if (action === 'pa') {
@@ -39,7 +40,7 @@ function start_pulse(){
     var direction = 'down';
     powermate.setBrightness(bright);
     
-    setInterval(function(){
+    pulse_interval = setInterval(function(){
       if (direction === 'down') {
           bright += -1;
       }
