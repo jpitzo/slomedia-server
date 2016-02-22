@@ -14,35 +14,24 @@ app.use(cors());
 // Setup powermate
 powermate = new pm.PowerMate();
 
+// setup child proc for brightness
+pulseProc = require('child_process').fork('/data/server/pulse');
+
 app.get('/brightness/:bright', function (req, res) {
   powermate.setBrightness(1*req.params.bright)
   res.send('Hello World!');
 });
 
-app.get('/pulse/', function (req, res) {
-
-  var bright = 100;
-  var direction = 'down';
-  powermate.setBrightness(bright);
+app.get('/pulse/:ss', function (req, res) {
   
-  setInterval(function(){
-    if (direction === 'down') {
-        bright += -2;
-    }
-    else{
-      bright += 2;
-    }
-    
-    if (bright === 100) {
-        direction = 'down';
-    }
-    else if (bright === 0) {
-        direction = 'up';
-    }
-    powermate.setBrightness(bright);
-  },20);
-
-  // Don't send response, as this will be long running
+  if(req.params.ss === 'start'){
+    pulseProc.send('pulse');
+  }
+  else{
+    pulseProc.send('stop');
+  }
+  
+  res.send('Pulse set to ' + req.params.ss);
 });
 
 app.get('/pa/:pa', function (req, res) {
