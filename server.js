@@ -38,7 +38,7 @@ app.get('/pulse/', function (req, res) {
         direction = 'up';
     }
     powermate.setBrightness(bright);
-  },50);
+  },100);
 
   // Don't send response, as this will be long running
 });
@@ -111,7 +111,5 @@ io.on('connection', function(socket){
 });
 
 function init_powermate(socket) {
-    if (powermate === null) {
-        powermate = new pm.PowerMate(socket);
-    }
+    powermate = new pm.PowerMate(socket);
 }
