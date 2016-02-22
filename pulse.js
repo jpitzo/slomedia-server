@@ -1,7 +1,7 @@
 var pulsing = false;
 var interval = null;
 
-process.on('message' function(msg){
+process.on('message', function(msg){
     if (msg === 'pulse' && pulsing === false) {
         pulse();
     }
