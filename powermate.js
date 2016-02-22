@@ -46,7 +46,7 @@ function PowerMate(socket)
     
     // This can't be called twice or the second call will wonk out
     if (powermateObject === null) {
-        powermateObject = new HID.HID(powerMates[index].path);
+        powermateObject = new HID.HID(powerMates[0].path);
     }
     this.hid = powermateObject;
     this.position = 0;
