@@ -1,26 +1,16 @@
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
-var pm = require('./powermate');
 var io = require('socket.io')(server);
 var fs = require('fs');
 var cors = require('cors');
 var _ = require('underscore');
-var powermate = null;
 
 app.use(express.static('/data/media'));
 app.use(cors());
 
-// Setup powermate
-powermate = new pm.PowerMate();
-
 // setup child proc for brightness
-pulseProc = require('child_process').fork('/data/server/pulse');
-
-app.get('/brightness/:bright', function (req, res) {
-  powermate.setBrightness(1*req.params.bright)
-  res.send('Hello World!');
-});
+pmProc = require('child_process').fork('/data/server/powerprocess');
 
 app.get('/pulse/:ss', function (req, res) {
   
@@ -35,18 +25,13 @@ app.get('/pulse/:ss', function (req, res) {
 });
 
 app.get('/pa/:pa', function (req, res) {
-  powermate.setPulseAwake(req.params.pa == 1 ? 1 : 0)
+  pmProc.send({ action: 'pa', data: {value: req.params.pa == 1 ? 1 : 0}})
   res.send('Pulse Awake');
-
 });
 
 app.get('/pas/:pas', function (req, res) {
-  powermate.setPulseAsleep(req.params.pas == 1 ? 1 : 0)
+  pmProc.send({ action: 'pas', data: {value: req.params.pas == 1 ? 1 : 0}})
   res.send('Pulse Asleep!');
-});
-
-app.get('/videos/', function(req,res){
-    res.json(fs.readdirSync('/data/server/public/videos'));
 });
 
 app.get('/media/', function(req,res){
@@ -86,16 +71,32 @@ server.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });
 
+
+// Socket management
+var sockets = {};
+
 io.on('connection', function(socket){
     // Setup powermate
-    powermate.addSocket(socket);
+    sockets[socket.id] = socket;
 
     socket.on('sync', function(data){
-        console.log('here!!');
-        powermate.setPulseAwake(1)
+        pmProc.send({action: 'pa', data: {value: 1}});
         setTimeout(function(){
-            powermate.setPulseAwake(0);
-            powermate.setBrightness(255);
+            pmProc.send({action: 'pa', data: {value: 0}});
         },3000);
-    })
+    });
+});
+
+// Manage pmProc -> socket connection
+pmProc.on('message', function(msg){
+  // Pass along messages to sockets
+  Object.keys(sockets).forEach(function(key) {
+    if (sockets[key].connected) {
+        sockets[key].emit(msg.action, msg.data);
+    }
+    else{
+        // Remove socket
+        delete sockets[key];
+    }
+  });
 });

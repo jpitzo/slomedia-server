@@ -21,8 +21,6 @@ var SET_PULSE_MODE = 0x04;
 var allDevices;
 var powermateObject = null;
 
-var sockets = {};
-
 function getAllDevices()
 {
     if (!allDevices) {
@@ -31,7 +29,7 @@ function getAllDevices()
     return allDevices;
 }
 
-function PowerMate()
+function PowerMate(process)
 {
     var powerMates = getAllDevices();
     if (!powerMates.length) {
@@ -46,6 +44,7 @@ function PowerMate()
     this.position = 0;
     this.button = 0;
     this.hid.read(this.interpretData.bind(this));
+    this.process = process;
 }
 
 util.inherits(PowerMate, events.EventEmitter);
@@ -65,12 +64,6 @@ PowerMate.prototype._sendCommand = function(/* command [, args ...]*/) {
         console.log(error);
     }
 };
-
-PowerMate.prototype.addSocket = function(socket){
-    sockets[socket.id] = socket;
-    
-    return socket.id;
-}
 
 PowerMate.prototype.setLed = function(brightness) {
     this.hid.write([1, brightness]);
@@ -106,10 +99,10 @@ PowerMate.prototype.interpretData = function(error, data) {
         console.log('going to emit!')
         if (button === 1) {
             console.log('buttonDown')
-            this.socketEmit('buttonDown', {});
+            this.process.send({ msg: 'buttonDown', data: {}});
         }
         else{
-            this.socketEmit('buttonUp', {});
+            this.process.send({ msg: 'buttonUp', data: {}});
         }
         
         this.button = button;
@@ -120,23 +113,11 @@ PowerMate.prototype.interpretData = function(error, data) {
             delta = -256 + delta;
         }
         this.position += delta;
-        this.socketEmit('turn', {delta: delta, position: this.position });
+        this.process.send({ msg: 'turn', data: {delta: delta, position: this.position }});
     }
 
     console.log(this.button + "-" + this.position + "-" + delta)
     this.hid.read(this.interpretData.bind(this));
-}
-
-PowerMate.prototype.socketEmit = function(event, data){
-    Object.keys(sockets).forEach(function(key) {
-        if (sockets[key].connected) {
-            sockets[key].emit(event, data);
-        }
-        else{
-            // Remove socket
-            delete sockets[key];
-        }
-    });
 }
 
 exports.PowerMate = PowerMate;
