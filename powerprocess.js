@@ -27,6 +27,15 @@ process.on('message', function(msg){
     }
 });
 
+process.once("SIGTERM", function () {
+
+  // Cleanup activities go here...
+  powermate.close();
+
+  // Then shutdown.
+  process.exit(0);
+});
+
 function start_pulse(){
     if (pulsing === true) {
         return;

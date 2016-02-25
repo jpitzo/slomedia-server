@@ -69,6 +69,12 @@ PowerMate.prototype.setLed = function(brightness) {
     this.hid.write([1, brightness]);
 }
 
+PowerMate.prototype.close = function(){
+    if (this.hid) {
+        this.hid.close();
+    }
+}
+
 PowerMate.prototype.setBrightness = function(brightness, callback) {
   this._sendCommand(SET_STATIC_BRIGHTNESS, brightness);
 
