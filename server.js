@@ -89,6 +89,12 @@ io.on('connection', function(socket){
 
 // Manage pmProc -> socket connection
 pmProc.on('message', function(msg){
+  // Check if it died
+  if (msg.action === 'dead') {
+    console.log('child died!!!');
+    process.exit(1);
+  }
+  
   // Pass along messages to sockets
   Object.keys(sockets).forEach(function(key) {
     if (sockets[key].connected) {

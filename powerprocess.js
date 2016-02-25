@@ -1,6 +1,11 @@
 // Process to manage powermate.js
 var fs = require('fs');
 var util = require('util');
+
+process.on('exit', function () {
+    process.send({action: 'dead', data: {}});
+});
+
 var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
 var log_stdout = process.stdout;
 
