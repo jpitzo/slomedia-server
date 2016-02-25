@@ -39,7 +39,7 @@ process.on('message', function(msg){
     }
 });
 
-process.on("SIGTERM", function () {
+process.on("disconnect", function () {
 
   // Cleanup activities go here...
   console.log('closing pmate!!');
