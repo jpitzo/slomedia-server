@@ -9,6 +9,7 @@ console.log = function(d) { //
   log_stdout.write(util.format(d) + '\n');
 };
 
+console.log('forked process running');
 
 var pm = require('./powermate');
 var powermate = null;
