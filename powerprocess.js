@@ -27,12 +27,14 @@ process.on('message', function(msg){
     }
 });
 
-process.once("SIGTERM", function () {
+process.on("SIGTERM", function () {
 
   // Cleanup activities go here...
+  console.log('closing pmate!!');
   powermate.close();
 
   // Then shutdown.
+  console.log('shutting down');
   process.exit(0);
 });
 
