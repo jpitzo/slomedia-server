@@ -43,6 +43,7 @@ function PowerMate(process)
     this.hid = powermateObject;
     this.position = 0;
     this.button = 0;
+    this.lastRead = null;
     this.hid.read(this.interpretData.bind(this));
     this.process = process;
 }
@@ -126,6 +127,7 @@ PowerMate.prototype.interpretData = function(error, data) {
         this.hid.read(this.interpretData.bind(this));
     }
     
+    this.lastRead = new Date();
 }
 
 exports.PowerMate = PowerMate;

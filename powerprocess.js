@@ -43,7 +43,15 @@ process.on('message', function(msg){
         powermate.setPulseAsleep(msg.data.value);
     }
     else if (action === 'noop') {
-        return "fingernails";
+        var lr = powermate.lastRead();
+        var now = new Date();
+        
+        var diff = now.getTime() - lr.getTime();
+        console.log("Difference is: " + diff);
+        
+        if (diff > 5) {
+            console.log('timedout!!')
+        }
     }
 });
 
