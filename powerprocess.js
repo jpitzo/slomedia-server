@@ -67,28 +67,7 @@ function start_pulse(){
     if (pulse_interval) {
         clearInterval(pulse_interval);
     }
-    
-    var bright = 100;
-    var direction = 'down';
-    powermate.setBrightness(bright);
-    
-    pulse_interval = setInterval(function(){
-      if (direction === 'down') {
-          bright += -1;
-      }
-      else{
-        bright += 1;
-      }
-      
-      if (bright === 100) {
-          direction = 'down';
-      }
-      else if (bright === 0) {
-          direction = 'up';
-      }
-      powermate.setBrightness(bright);
-    },20);
-    
+
     pulsing = true;
 }
 
@@ -102,8 +81,6 @@ function stop_pulse() {
     }
     
     powermate.setPulseAwake(0);
-    pulsing = false;
-    return;
     
     powermate.setBrightness(100);
     pulsing = false;
