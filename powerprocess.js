@@ -42,6 +42,9 @@ process.on('message', function(msg){
     else if (action === 'pas') {
         powermate.setPulseAsleep(msg.data.value);
     }
+    else if (action === 'noop') {
+        return "fingernails";
+    }
 });
 
 process.on("disconnect", function () {

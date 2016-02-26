@@ -34,6 +34,18 @@ app.get('/pas/:pas', function (req, res) {
   res.send('Pulse Asleep!');
 });
 
+app.get('/noop/', function (req, res) {
+  resp = pmProc.send({ action: 'noop', data: {}}, null, function(cbo){
+    if (cbo !== null) {
+        // An error happened!!
+        console.log('error with noop: ' + cbo);
+    }
+    console.log(cbo);
+  });
+  console.log(resp);
+  res.send(resp);
+});
+
 app.get('/media/', function(req,res){
     files = fs.readdirSync('/data/server/public/media');
     file_dict = {};
