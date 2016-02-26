@@ -60,6 +60,10 @@ function start_pulse(){
         return;
     }
     
+    powermate.setPulseAwake(1);
+    pulsing = true;
+    return;
+    
     if (pulse_interval) {
         clearInterval(pulse_interval);
     }
@@ -96,6 +100,10 @@ function stop_pulse() {
     if (pulsing === false) {
         return;
     }
+    
+    powermate.setPulseAwake(0);
+    pulsing = false;
+    return;
     
     powermate.setBrightness(100);
     pulsing = false;
