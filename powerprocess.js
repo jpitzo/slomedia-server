@@ -6,7 +6,7 @@ process.on('exit', function () {
     process.send({action: 'dead', data: {}});
 });
 
-var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
+var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'a'});
 var log_stdout = process.stdout;
 
 console.log = function(d) { //
@@ -14,7 +14,7 @@ console.log = function(d) { //
   log_stdout.write(util.format(d) + '\n');
 };
 
-console.log('forked process running');
+console.log('Powerprocess process running @ ' + new Date());
 
 var pm = require('./powermate');
 var powermate = null;

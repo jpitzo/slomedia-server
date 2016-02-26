@@ -100,26 +100,32 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
 };
 
 PowerMate.prototype.interpretData = function(error, data) {
-    var button = data[0];
-    if (button ^ this.button) {
-        if (button === 1) {
-            this.process.send({ action: 'buttonDown', data: {}});
+    try {
+        var button = data[0];
+        if (button ^ this.button) {
+            if (button === 1) {
+                this.process.send({ action: 'buttonDown', data: {}});
+            }
+            else{
+                this.process.send({ action: 'buttonUp', data: {}});
+            }
+            
+            this.button = button;
         }
-        else{
-            this.process.send({ action: 'buttonUp', data: {}});
+        var delta = data[1];
+        if (delta) {
+            if (delta & 0x80) {
+                delta = -256 + delta;
+            }
+            this.position += delta;
+            this.process.send({ action: 'turn', data: {delta: delta, position: this.position }});
         }
-        
-        this.button = button;
+        this.hid.read(this.interpretData.bind(this));
+    } catch(e) {
+        console.log("Read Error" + e);
+        this.hid.read(this.interpretData.bind(this));
     }
-    var delta = data[1];
-    if (delta) {
-        if (delta & 0x80) {
-            delta = -256 + delta;
-        }
-        this.position += delta;
-        this.process.send({ action: 'turn', data: {delta: delta, position: this.position }});
-    }
-    this.hid.read(this.interpretData.bind(this));
+    
 }
 
 exports.PowerMate = PowerMate;

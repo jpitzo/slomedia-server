@@ -40,7 +40,6 @@ app.get('/noop/', function (req, res) {
         // An error happened!!
         console.log('error with noop: ' + cbo);
     }
-    console.log(cbo);
   });
   console.log(resp);
   res.send(resp);
