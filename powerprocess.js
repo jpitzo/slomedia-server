@@ -45,13 +45,17 @@ process.on('message', function(msg){
     }
     else if (action === 'noop') {
         var lr = powermate.lastRead;
-        var now = new Date();
+        powerlog(lr);
         
-        var diff = now.getTime() - lr.getTime();
-        powerlog("Difference is: " + diff);
+        if (powermate.lastRead) {
+            var now = new Date();
         
-        if (diff > 5) {
-            powerlog('timedout!!')
+            var diff = now.getTime() - lr.getTime();
+            powerlog("Difference is: " + diff);
+            
+            if (diff > 5) {
+                powerlog('timedout!!')
+            }
         }
     }
 });
