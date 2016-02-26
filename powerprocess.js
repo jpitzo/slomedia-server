@@ -9,12 +9,13 @@ process.on('exit', function () {
 var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'a'});
 var log_stdout = process.stdout;
 
-console.log = function(d) { //
+powerlog = function(d) { //
   log_file.write(util.format(d) + '\n');
   log_stdout.write(util.format(d) + '\n');
+  console.log(util.format(d) + '\n')
 };
 
-console.log('Powerprocess process running @ ' + new Date());
+powerlog('Powerprocess process running @ ' + new Date());
 
 var pm = require('./powermate');
 var powermate = null;
@@ -43,14 +44,14 @@ process.on('message', function(msg){
         powermate.setPulseAsleep(msg.data.value);
     }
     else if (action === 'noop') {
-        var lr = powermate.lastRead();
+        var lr = powermate.lastRead;
         var now = new Date();
         
         var diff = now.getTime() - lr.getTime();
-        console.log("Difference is: " + diff);
+        powerlog("Difference is: " + diff);
         
         if (diff > 5) {
-            console.log('timedout!!')
+            powerlog('timedout!!')
         }
     }
 });
@@ -58,11 +59,11 @@ process.on('message', function(msg){
 process.on("disconnect", function () {
 
   // Cleanup activities go here...
-  console.log('closing pmate!!');
+  powerlog('closing pmate!!');
   powermate.close();
 
   // Then shutdown.
-  console.log('shutting down');
+  powerlog('shutting down');
   process.exit(0);
 });
 
