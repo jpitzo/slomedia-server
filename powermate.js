@@ -44,7 +44,13 @@ function PowerMate(process)
     this.position = 0;
     this.button = 0;
     this.lastRead = null;
-    this.hid.read(this.interpretData.bind(this));
+    //this.hid.read(this.interpretData.bind(this));
+    
+    this.hid.on("data", this.interpretData.bind(this));
+    this.hid.on("error", function(error){
+        console.log("Got a pmate error!!: " + error);
+    });
+    
     this.process = process;
 }
 
@@ -101,6 +107,9 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
 };
 
 PowerMate.prototype.interpretData = function(error, data) {
+    console.log('entering interp');
+    console.log(error);
+    console.log(data);
     try {
         var button = data[0];
         if (button ^ this.button) {
@@ -121,10 +130,10 @@ PowerMate.prototype.interpretData = function(error, data) {
             this.position += delta;
             this.process.send({ action: 'turn', data: {delta: delta, position: this.position }});
         }
-        this.hid.read(this.interpretData.bind(this));
+        //this.hid.read(this.interpretData.bind(this));
     } catch(e) {
         console.log("Read Error" + e);
-        this.hid.read(this.interpretData.bind(this));
+        //this.hid.read(this.interpretData.bind(this));
     }
     
     this.lastRead = new Date();
