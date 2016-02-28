@@ -50,13 +50,13 @@ setInterval(function(){
   resp = pmProc.send({ action: 'noop', data: {}}, null, function(cbo){
     if (cbo !== null) {
         // An error happened!!
-        console.log('!error with noop: ' + cbo + '@ ' + new Date());
+        console.log('!error with noop: ' + cbo + ' @ ' + new Date());
     }
     else{
-      console.log('noop send was: ' + cbo + '@ ' + new Date());
+      console.log('noop send was: ' + cbo + ' @ ' + new Date());
     }
   });
-  console.log("PmProce responds with: " + resp + '@ ' + new Date());
+  console.log("PmProc responds with: " + resp + ' @ ' + new Date());
 },5000);
 
 
