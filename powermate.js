@@ -106,10 +106,7 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
   }
 };
 
-PowerMate.prototype.interpretData = function(error, data) {
-    console.log('entering interp');
-    console.log(error);
-    console.log(data);
+PowerMate.prototype.interpretData = function(data) {
     try {
         var button = data[0];
         if (button ^ this.button) {
