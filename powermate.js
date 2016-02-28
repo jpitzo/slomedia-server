@@ -109,7 +109,6 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
 };
 
 PowerMate.prototype.interpretData = function(data) {
-    this.log(data);
     try {
         var button = data[0];
         if (button ^ this.button) {
