@@ -49,7 +49,7 @@ function PowerMate(process, powerlog)
     
     this.hid.on("data", this.interpretData.bind(this));
     this.hid.on("error", function(error){
-        this.log("Got a pmate error!!: " + error);
+        this.log("@Got a pmate error!!: " + error);
     });
     
     this.process = process;
@@ -109,6 +109,7 @@ PowerMate.prototype.setPulseAwake = function(pulseAwake, callback) {
 };
 
 PowerMate.prototype.interpretData = function(data) {
+    this.log(data);
     try {
         var button = data[0];
         if (button ^ this.button) {
