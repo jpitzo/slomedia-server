@@ -11,7 +11,6 @@ var log_stdout = process.stdout;
 
 powerlog = function(d) { //
   log_file.write(util.format(d) + '\n');
-  log_stdout.write(util.format(d) + '\n');
   console.log(util.format(d) + '\n')
 };
 
@@ -23,7 +22,7 @@ var pulsing = false;
 var pulse_interval = null;
 
 // Setup powermate
-powermate = new pm.PowerMate(process);
+powermate = new pm.PowerMate(process, powerlog);
 
 // Let's make sure the brightness is always at 100 to start
 powermate.setBrightness(100);

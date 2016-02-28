@@ -29,8 +29,9 @@ function getAllDevices()
     return allDevices;
 }
 
-function PowerMate(process)
+function PowerMate(process, powerlog)
 {
+    this.log = powerlog;
     var powerMates = getAllDevices();
     if (!powerMates.length) {
         throw new Error("No PowerMates could be found");
@@ -48,7 +49,7 @@ function PowerMate(process)
     
     this.hid.on("data", this.interpretData.bind(this));
     this.hid.on("error", function(error){
-        console.log("Got a pmate error!!: " + error);
+        this.log("Got a pmate error!!: " + error);
     });
     
     this.process = process;
@@ -68,7 +69,8 @@ PowerMate.prototype._sendCommand = function(/* command [, args ...]*/) {
         this.hid.sendFeatureReport(featureReport);
     }
     catch(error){
-        console.log(error);
+        
+        this.log("Send command error:" + error);
     }
 };
 
@@ -127,10 +129,8 @@ PowerMate.prototype.interpretData = function(data) {
             this.position += delta;
             this.process.send({ action: 'turn', data: {delta: delta, position: this.position }});
         }
-        //this.hid.read(this.interpretData.bind(this));
     } catch(e) {
-        console.log("Read Error" + e);
-        //this.hid.read(this.interpretData.bind(this));
+        this.log("Read Error" + e);
     }
     
     this.lastRead = new Date();

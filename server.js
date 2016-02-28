@@ -45,6 +45,21 @@ app.get('/noop/', function (req, res) {
   res.send(resp);
 });
 
+
+setInterval(function(){
+  resp = pmProc.send({ action: 'noop', data: {}}, null, function(cbo){
+    if (cbo !== null) {
+        // An error happened!!
+        console.log('!error with noop: ' + cbo);
+    }
+    else{
+      console.log('noop send was: ' + cbo);
+    }
+  });
+  console.log("PmProce responds with: " + resp);
+},2000);
+
+
 app.get('/media/', function(req,res){
     files = fs.readdirSync('/data/server/public/media');
     file_dict = {};
