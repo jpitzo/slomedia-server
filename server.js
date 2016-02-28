@@ -56,6 +56,10 @@ setInterval(function(){
       console.log('noop send was: ' + cbo + ' @ ' + new Date());
     }
   });
+  
+  if (resp !== undefined) {
+    console.log('!error with pmProc, Responded with: ' + resp + ' @ ' + new Date());
+  }
   console.log("PmProc responds with: " + resp + ' @ ' + new Date());
 },5000);
 
