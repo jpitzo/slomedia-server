@@ -3,14 +3,16 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var fs = require('fs');
+var path = require('path');
 var cors = require('cors');
 var _ = require('underscore');
+var baseDir = "/data/server"
 
 app.use(express.static('/data/media'));
 app.use(cors());
 
 // setup child proc for brightness
-pmProc = require('child_process').fork('/data/server/powerprocess');
+pmProc = require('child_process').fork(baseDir + '/powerprocess');
 
 app.get('/pulse/:ss', function (req, res) {
   
@@ -41,7 +43,6 @@ app.get('/noop/', function (req, res) {
         console.log('error with noop: ' + cbo);
     }
   });
-  console.log(resp);
   res.send(resp);
 });
 
@@ -50,7 +51,7 @@ setInterval(function(){
   resp = pmProc.send({ action: 'noop', data: {}}, null, function(cbo){
     if (cbo !== null) {
         // An error happened!!
-        console.log('!error with noop: ' + cbo + ' @ ' + new Date());
+        console.log('!!!error with noop: ' + cbo + ' @ ' + new Date());
     }
     else{
       console.log('noop send was: ' + cbo + ' @ ' + new Date());
@@ -58,15 +59,39 @@ setInterval(function(){
   });
   
   if (resp !== undefined) {
-    console.log('!error with pmProc, Responded with: ' + resp + ' @ ' + new Date());
+    console.log('!!!error with pmProc, Responded with: ' + resp + ' @ ' + new Date());
   }
   console.log("PmProc responds with: " + resp + ' @ ' + new Date());
-},5000);
+},10000);
 
+app.get('/cities/', function(req, res){
 
-app.get('/media/', function(req,res){
-    files = fs.readdirSync('/data/server/public/media');
+    res.json(fs.readdirSync(baseDir + '/public/media').filter(function(file) {
+        return fs.statSync(path.join(baseDir, '/public/media', file)).isDirectory();
+    }));
+})
+
+app.get('/media/:city([0-9A-z]+)?', function(req,res){
+    var mediaDir = path.join(baseDir, '/public/media');
+
+    var city = req.params.city;
+    console.log(city);
+    if (city) {
+
+        if(fs.existsSync(path.join(mediaDir,city))){
+            // Probably consider checking whether it's a dir
+            // but since the fe is probably getting it from the list of sources should be all
+            // good
+            mediaDir += "/" + city;
+        }
+
+        // So, I think for now we'll just show the regular videos if
+        // the city dir doesn't exist
+    }
+
+    files = fs.readdirSync(mediaDir);
     file_dict = {};
+
 
     for(var i = 0; i < files.length; i++){
       if(files[i].indexOf('_video.mp4') !== -1 || files[i].indexOf('_audio.mp3') !== -1){
